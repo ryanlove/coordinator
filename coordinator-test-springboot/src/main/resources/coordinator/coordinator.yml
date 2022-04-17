@@ -1,0 +1,27 @@
+coordinator:
+  identifyResolvers:
+    - resolver: ItemIdentifyResolver
+      targetModel: com.github.ryanlove.coordinator.itempublish.domain.ItemDO
+
+  groups:
+    - groupName: "GROUP_ONE_PRICE"
+      applyTags: ONE_PRICE,PRE_SALE
+      conflictList:
+        - className: com.github.ryanlove.coordinator.itempublish.procedure.PostPublishProcedure
+          entryMethod: postPublishExtPoint
+          rank: "ONE_PRICE,PRE_SALE"
+        - className: com.github.ryanlove.coordinator.itempublish.procedure.PrePublishProcedure
+          entryMethod: validate
+          rank: "PRE_SALE,ONE_PRICE"
+
+    - groupName: "GROUP_COUPON"
+      applyTags: COUPON,PRE_SALE
+      conflictList:
+        - className: com.github.ryanlove.coordinator.itempublish.procedure.PostPublishProcedure
+          entryMethod: postPublishExtPoint
+          rank: "PRE_SALE,COUPON"
+        - className: com.github.ryanlove.coordinator.itempublish.procedure.PrePublishProcedure
+          entryMethod: validate
+          rank: "COUPON,PRE_SALE"
+
+

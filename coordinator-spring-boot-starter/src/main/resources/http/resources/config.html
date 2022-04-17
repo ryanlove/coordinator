@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Coordinator Config</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8"/>
+    <link href='css/bootstrap.min.css' rel="stylesheet"/>
+    <link href="css/style.css" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" src="js/doT.js" charset="utf8"></script>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12">
+            <h3>
+                Coordinator Config JSON
+                <a href="config.json" target="_blank">View JSON API</a>
+            </h3>
+        </div>
+    </div>
+</div>
+
+<script id="config-tmpl" type="text/template">
+    <div class="tab-content">
+
+        <div>
+            <table class="table table-bordered" style="background-color: #fff">
+                <tbody>
+                {{~ it.result.identifyResolvers :identifyResolver:i }}
+                <tr valign="top" class="td_lable">
+                    <td><span>identifyResolver{{=i+1}}</span></td>
+                    <td>第{{=i+1}}个标签识别器</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td><span style="font-weight: bold;">resolver</span></td>
+                    <td>{{=identifyResolver.resolver}}</td>
+                    <td>标签识别器</td>
+                </tr>
+                <tr>
+                    <td><span style="font-weight: bold;">targetModel</span></td>
+                    <td>{{=identifyResolver.targetModel}}</td>
+                    <td>目标模型类</td>
+                </tr>
+                {{~ }}
+                </tbody>
+            </table>
+            <table class="table table-bordered" style="background-color: #fff">
+                <tbody>
+                {{~ it.result.groups :group:i }}
+                <tr valign="top" class="td_lable">
+                    <td><span>group{{=i+1}}</span></td>
+                    <td>第{{=i+1}}个标签组</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td><span style="font-weight: bold;">groupName</span></td>
+                    <td>{{=group.groupName}}</td>
+                    <td>标签组名称</td>
+                </tr>
+                <tr>
+                    <td><span style="font-weight: bold;">applyTags</span></td>
+                    <td>{{=group.applyTags}}</td>
+                    <td>标签组包含的标签</td>
+                </tr>
+                {{~ group.conflictList :conflict:i}}
+                <tr>
+                    <td><span style="font-weight: bold;">conflict{{=i+1}}</span></td>
+                    <td>第{{=i+1}}个冲突点</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td><span>className</span></td>
+                    <td>{{=conflict.className}}</td>
+                    <td>冲突接口</td>
+                </tr>
+                <tr>
+                    <td><span>entryMethod</span></td>
+                    <td>{{=conflict.entryMethod}}</td>
+                    <td>冲突方法</td>
+                </tr>
+                <tr>
+                    <td><span>rank</span></td>
+                    <td>{{=conflict.rank}}</td>
+                    <td>执行的标签顺序</td>
+                </tr>
+                {{~ }}
+                {{~ }}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</script>
+
+<script type="text/javascript">
+    $.namespace("coordinator.config");
+    coordinator.config = function () {
+
+        return  {
+            init : function() {
+                this.ajaxRequestForConfig();
+            },
+            ajaxRequestForConfig : function() {
+                $.ajax({
+                    type: 'POST',
+                    url: "config.json",
+                    success: function(data) {
+
+                        var tmpl = $('#config-tmpl').html();
+                        var doTtmpl = doT.template(tmpl);
+                        var configHtml = doTtmpl(data);
+
+                        $(".span12 h3").after(configHtml);
+                    },
+                    dataType: "json"
+                });
+            }
+
+        }
+    }();
+
+    $(document).ready(function() {
+        coordinator.config.init();
+    });
+</script>
+</body>
+</html>

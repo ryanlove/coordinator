@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Coordinator Resolver</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8"/>
+    <link href='css/bootstrap.min.css' rel="stylesheet"/>
+    <link href="css/style.css" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" src="js/doT.js" charset="utf8"></script>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12">
+            <h3>
+                Coordinator Resolver JSON
+                <a href="resolver.json" target="_blank">View JSON API</a>
+            </h3>
+        </div>
+    </div>
+</div>
+
+<script id="resolver-tmpl" type="text/template">
+    <div class="tab-content">
+
+        <div>
+            <table class="table table-bordered" style="background-color: #fff">
+                <tbody>
+                <tr valign="top" class="td_lable">
+                    <td>接口</td>
+                    <td>Tag</td>
+                    <td>执行类</td>
+                </tr>
+                {{ for(var interface in it.result) { }}
+                {{ for(var tag in it.result[interface]) { }}
+                <tr>
+                    <td>{{= interface }}</td>
+                    <td>{{= tag }}</td>
+                    <td>{{= it.result[interface][tag] }}</td>
+                </tr>
+                {{ } }}
+                {{ } }}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</script>
+
+<script type="text/javascript">
+    $.namespace("coordinator.resolver");
+    coordinator.resolver = function () {
+        return  {
+            init : function() {
+                this.ajaxRequestForResolver();
+            },
+            ajaxRequestForResolver : function() {
+                $.ajax({
+                    type: 'POST',
+                    url: "resolver.json",
+                    success: function(data) {
+
+                        var tmpl = $('#resolver-tmpl').html();
+                        var doTtmpl = doT.template(tmpl);
+                        var resolverHtml = doTtmpl(data);
+
+                        $(".span12 h3").after(resolverHtml);
+                    },
+                    dataType: "json"
+                });
+            }
+
+        }
+    }();
+
+    $(document).ready(function() {
+        coordinator.resolver.init();
+    });
+</script>
+</body>
+</html>
